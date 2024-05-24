@@ -134,9 +134,6 @@ SkipImport:
     End If
  
     Call BulkLabelPrep
-
-    ''''''''''''''''''''''''''''''''''''''''
-    ''''''''''''''''''''''''''''''''''''''''
     
     Sheets("Shopify All Data").visible = False
     Sheets("Initial Paste Area").visible = False
@@ -435,3 +432,53 @@ Function CollectionContainsValue(col As Collection, val As Variant) As Boolean
         End If
     Next n
 End Function
+
+Function printPackingSlip(pagesToPrint As Integer)
+    
+    If pagesToPrint = 1 Then GoTo AreaOne
+    If pagesToPrint = 2 Then GoTo AreaTwo
+    If pagesToPrint = 3 Then GoTo AreaThree
+    If pagesToPrint = 4 Then GoTo AreaFour
+    If pagesToPrint = 5 Then GoTo AreaFive
+    If pagesToPrint = 6 Then GoTo AreaSix
+    If pagesToPrint = 7 Then GoTo AreaSeven
+    If pagesToPrint = 8 Then GoTo AreaEight
+
+AreaOne:
+    ActiveSheet.PageSetup.PrintArea = "$B$1:$J$41"
+    GoTo PrintPage
+        
+AreaTwo:
+    ActiveSheet.PageSetup.PrintArea = "$B$1:$J$78"
+    GoTo PrintPage
+            
+AreaThree:
+    ActiveSheet.PageSetup.PrintArea = "$B$1:$J$115"
+    GoTo PrintPage
+            
+AreaFour:
+    ActiveSheet.PageSetup.PrintArea = "$B$1:$J$152"
+    GoTo PrintPage
+            
+AreaFive:
+    ActiveSheet.PageSetup.PrintArea = "$B$1:$J$189"
+    GoTo PrintPage
+                
+AreaSix:
+    ActiveSheet.PageSetup.PrintArea = "$B$1:$J$226"
+    GoTo PrintPage
+    
+AreaSeven:
+    ActiveSheet.PageSetup.PrintArea = "$B$1:$J$263"
+    GoTo PrintPage
+    
+AreaEight:
+    ActiveSheet.PageSetup.PrintArea = "$B$1:$J$300"
+    
+PrintPage:
+
+    ActiveWindow.SelectedSheets.PrintOut copies:=Range("PACKSLIPQTY").value, Collate:=True, _
+        IgnorePrintAreas:=False
+    
+End Function
+
