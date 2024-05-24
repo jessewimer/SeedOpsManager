@@ -312,3 +312,115 @@ SkipImport:
     Application.ScreenUpdating = True
     
 End Sub
+
+'----------- Functions -----------'
+
+Function CheckForDuplicates() As Boolean
+    Dim initialPasteSheet As Worksheet
+    Dim shopifyDataSheet As Worksheet
+    Dim initialPasteRange As Range
+    Dim shopifyRange As Range
+    Dim uniqueValues As Collection
+    Dim cell As Range
+    Dim value As Variant
+    Dim duplicateFound As Boolean
+    
+    ' Set reference to the worksheets
+    Set initialPasteSheet = ThisWorkbook.Sheets("Initial Paste Area")
+    Set shopifyDataSheet = ThisWorkbook.Sheets("Shopify All Data")
+    
+    ' Get the range of data from "Initial Paste Area"
+    Set initialPasteRange = initialPasteSheet.Range("A2", initialPasteSheet.Range("A2").End(xlDown))
+    
+    ' Initialize a collection to store unique values
+    Set uniqueValues = New Collection
+    
+    ' Loop through the range and add unique values to the collection
+    For Each cell In initialPasteRange
+        If cell.value <> "" Then
+            On Error Resume Next ' Avoid adding duplicates to the collection
+            uniqueValues.Add cell.value, CStr(cell.value)
+            On Error GoTo 0
+        End If
+    Next cell
+    
+    ' Loop through the unique values and check if they exist in "Shopify All Data"
+    For Each value In uniqueValues
+        Set shopifyRange = shopifyDataSheet.Columns("A").Find(value, LookIn:=xlValues, LookAt:=xlWhole)
+        If Not shopifyRange Is Nothing Then
+            duplicateFound = True
+            Exit For
+        End If
+    Next value
+    
+    ' Return the boolean value indicating whether duplicates were found
+    CheckForDuplicates = duplicateFound
+End Function
+
+Function FilterForOldOrder() As Boolean
+    FilterForOldOrder = False
+
+    ThisWorkbook.Sheets("Shopify All Data").Range("A1:X100000").AutoFilter Field:=1, Criteria1:=Sheets("Packing Slips").Range("LISTFILTER").value
+    
+    Dim listFilter As Range
+    Set listFilter = Sheets("Packing Slips").Range("LISTFILTER")
+    
+    Dim visible As Range
+    'On Error Resume Next
+    Set visible = Sheets("Shopify All Data").Range("A:A").SpecialCells(xlCellTypeVisible)
+
+    Dim result As Range
+    Set result = visible.Find(What:=listFilter.value, LookIn:=xlValues, LookAt:=xlWhole)
+    
+    FilterForOldOrder = Not result Is Nothing
+
+End Function
+
+Function printPackingSlip(pagesToPrint As Integer)
+    
+    If pagesToPrint = 1 Then GoTo AreaOne
+    If pagesToPrint = 2 Then GoTo AreaTwo
+    If pagesToPrint = 3 Then GoTo AreaThree
+    If pagesToPrint = 4 Then GoTo AreaFour
+    If pagesToPrint = 5 Then GoTo AreaFive
+    If pagesToPrint = 6 Then GoTo AreaSix
+    If pagesToPrint = 7 Then GoTo AreaSeven
+    If pagesToPrint = 8 Then GoTo AreaEight
+
+AreaOne:
+    ActiveSheet.PageSetup.PrintArea = "$B$1:$J$41"
+    GoTo PrintPage
+        
+AreaTwo:
+    ActiveSheet.PageSetup.PrintArea = "$B$1:$J$78"
+    GoTo PrintPage
+            
+AreaThree:
+    ActiveSheet.PageSetup.PrintArea = "$B$1:$J$115"
+    GoTo PrintPage
+            
+AreaFour:
+    ActiveSheet.PageSetup.PrintArea = "$B$1:$J$152"
+    GoTo PrintPage
+            
+AreaFive:
+    ActiveSheet.PageSetup.PrintArea = "$B$1:$J$189"
+    GoTo PrintPage
+                
+AreaSix:
+    ActiveSheet.PageSetup.PrintArea = "$B$1:$J$226"
+    GoTo PrintPage
+    
+AreaSeven:
+    ActiveSheet.PageSetup.PrintArea = "$B$1:$J$263"
+    GoTo PrintPage
+    
+AreaEight:
+    ActiveSheet.PageSetup.PrintArea = "$B$1:$J$300"
+    
+PrintPage:
+
+    ActiveWindow.SelectedSheets.PrintOut copies:=Range("PACKSLIPQTY").value, Collate:=True, _
+        IgnorePrintAreas:=False
+    
+End Function
