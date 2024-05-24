@@ -424,3 +424,14 @@ PrintPage:
         IgnorePrintAreas:=False
     
 End Function
+
+Function CollectionContainsValue(col As Collection, val As Variant) As Boolean
+    Dim n As Long
+    CollectionContainsValue = False
+    For n = 1 To col.Count
+        If col.Item(n) = val Then
+            CollectionContainsValue = True
+            Exit Function
+        End If
+    Next n
+End Function
